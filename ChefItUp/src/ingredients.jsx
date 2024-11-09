@@ -4,33 +4,53 @@ import './App.css'
 
 export default function Ingredients() {
     const [ingredients, setIngredients] = useState(["Apple", "Banana", "Pear"]);
-    const [newIngredient, setNewIngredient] = useState([""]);
+    const [newIngredient, setNewIngredient] = useState("");
 
     function handleInputChange(event) {
-        const endCharacter = event.target.value[event.target.value.length - 1];
-        if (endCharacter === "\n") {
-            addIngredient(event.target.value);
-            setNewIngredient("");
-        } else {
-            const message = event.target.value;
-            setNewIngredient(message);
-        }
+        const message = event.target.value;
+        setNewIngredient(message);
     }
 
     function addIngredient(event) {
         console.log(event.key);
         if (["Enter", "\n"].includes(event.key)) {
-            setIngredients(prevIngredients => [...prevIngredients, newIngredient.trim()]);
+            if (newIngredient.trim() !== "") {
+                setIngredients(prevIngredients => [...prevIngredients, newIngredient.trim()]);
+            }
             setNewIngredient("");
         }
     }
 
+    function removeItem(index) {
+        const updatedIngredients = ingredients.filter((_, i) => i !== index);
+        setIngredients(updatedIngredients);
+    }
+
     return <div class="vbox">
-        <ul>
+        <ul class = "ulIngred">
             {ingredients.map((ingredient, index) => {
-                return <li key={index}>{ingredient}</li>
+                return <li 
+                        key={index}>
+                            <button
+                            onClick={() => removeItem(index)}
+                            style={{
+                                padding: '4px 4px', // Adjust size
+                                backgroundColor: '#ff4d4d', // Adjust color
+                                color: 'white',
+                                border: '2px solid white',
+                                borderRadius: '30px',
+                                cursor: 'pointer',
+                                fontSize: '14px', // Adjust text size
+                                alignSelf: 'center'
+                            }}
+                            >
+                            Remove
+                            </button>
+                            {ingredient}
+                        </li> 
             })}
         </ul>
+
         <input
             type="text"
             value={newIngredient}
