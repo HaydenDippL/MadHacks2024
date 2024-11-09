@@ -1,0 +1,17 @@
+.container {
+    display: flex;             /* Enables flexbox */
+    justify-content: space-between; /* Distributes space evenly */
+}
+
+.vbox {
+    display: flex;                /* Enables flexbox */
+    flex-direction: column;       /* Stacks items vertically */
+    gap: 10px;                    /* Optional space between items */
+}
+  
+
+.hbox {
+    display: flex;                /* Enables flexbox */
+    flex-direction: row;          /* Arranges items horizontally (default) */
+    gap: 10px;                    /* Optional space between items */
+}

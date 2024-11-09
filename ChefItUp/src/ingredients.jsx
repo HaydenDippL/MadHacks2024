@@ -3,7 +3,7 @@ import { useState } from 'react';
 import './App.css'
 
 export default function Ingredients() {
-    const [ingredients, setIngredients] = useState(["Apple", "Banana", "Pear"]);;
+    const [ingredients, setIngredients] = useState(["Apple", "Banana", "Pear"]);
     const [newIngredient, setNewIngredient] = useState([""]);
 
     function handleInputChange(event) {
@@ -25,7 +25,7 @@ export default function Ingredients() {
         }
     }
 
-    return <>
+    return <div class="vbox">
         <ul>
             {ingredients.map((ingredient, index) => {
                 return <li key={index}>{ingredient}</li>
@@ -38,5 +38,5 @@ export default function Ingredients() {
             onChange={handleInputChange}
             placeholder="Add Ingredient"
         ></input>
-    </>
+    </div>;
 }
