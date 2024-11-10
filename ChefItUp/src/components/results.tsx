@@ -58,8 +58,8 @@ const RecipeFinder = () => {
 
     const fetchRecipes = async () => {
       const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
-      console.log(ingredients)
-      const querystring = "?ingredients=apples,flour,sugar&number=5&ignorePantry=false&ranking=1";
+      const queryIngredients = ingredients.join(",");
+      const querystring = "?ingredients="+queryIngredients+"&number=5&ignorePantry=false&ranking=1";
       try {
         const response = await fetch(url + querystring, {
           method: "GET",
@@ -79,6 +79,7 @@ const RecipeFinder = () => {
             image: item.image,
             id: item.id,
           }));
+          console.log(recipesData)
 
         for (let recipe of recipesData) {
             const recipeNutrition = await fetchRecipeNutrition(recipe.id);
