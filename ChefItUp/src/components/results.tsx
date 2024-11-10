@@ -99,7 +99,7 @@ const RecipeFinder = () => {
       }
     };
 
-    fetchRecipes();
+    // fetchRecipes();
   }, []);
 
   return (
