@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
 import { ScrollShadow } from "@nextui-org/react";
+import { useIngredientContext } from "@/context/ingredients-context";
 
 const RecipeFinder = () => {
   const [recipes, setRecipes] = useState(["Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!"]);
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
-  const [ingredients, setIngredients] = useState("");
+  const [ingredients, setIngredients] = useIngredientContext();
 
   useEffect(() => {
     const fetchRecipeNutrition = async (recipeId: number) => {
@@ -57,7 +58,8 @@ const RecipeFinder = () => {
 
     const fetchRecipes = async () => {
       const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
-      const querystring = "?ingredients=apples,flour,sugar&number=5&ignorePantry=false&ranking=1";
+      const queryIngredients = ingredients.join(",");
+      const querystring = "?ingredients="+queryIngredients+"&number=5&ignorePantry=false&ranking=1";
       try {
         const response = await fetch(url + querystring, {
           method: "GET",
@@ -77,6 +79,7 @@ const RecipeFinder = () => {
             image: item.image,
             id: item.id,
           }));
+          console.log(recipesData)
 
         for (let recipe of recipesData) {
             const recipeNutrition = await fetchRecipeNutrition(recipe.id);
@@ -112,7 +115,7 @@ const RecipeFinder = () => {
               <Image
                 alt="Card background"
                 className="object-cover rounded-xl"
-                src="https://nextui.org/images/fruit-2.jpeg"
+                src={images[index]}
                 width={100}
               />
             </CardBody>
