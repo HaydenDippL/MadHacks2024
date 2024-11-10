@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
 import { ScrollShadow } from "@nextui-org/react";
+import { useIngredientContext } from "@/context/ingredients-context";
 
 const RecipeFinder = () => {
   const [recipes, setRecipes] = useState(["Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!"]);
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
-  const [ingredients, setIngredients] = useState("");
+  const [ingredients, setIngredients] = useIngredientContext();
 
   useEffect(() => {
     const fetchRecipeNutrition = async (recipeId: number) => {
@@ -57,6 +58,7 @@ const RecipeFinder = () => {
 
     const fetchRecipes = async () => {
       const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
+      console.log(ingredients)
       const querystring = "?ingredients=apples,flour,sugar&number=5&ignorePantry=false&ranking=1";
       try {
         const response = await fetch(url + querystring, {
@@ -96,7 +98,7 @@ const RecipeFinder = () => {
       }
     };
 
-    // fetchRecipes();
+    fetchRecipes();
   }, []);
 
   return (
