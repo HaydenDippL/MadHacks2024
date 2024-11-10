@@ -115,7 +115,7 @@ const RecipeFinder = () => {
               <Image
                 alt="Card background"
                 className="object-cover rounded-xl"
-                src="https://nextui.org/images/fruit-2.jpeg"
+                src={images[index]}
                 width={100}
               />
             </CardBody>
