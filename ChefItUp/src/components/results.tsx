@@ -8,6 +8,7 @@ const RecipeFinder = () => {
   const [recipes, setRecipes] = useState([]);
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
+  const [instructions, setInstructions] = useState([]);
   const [ingredients, setIngredients] = useIngredientContext();
   const [macros, setMacros] = useMacroContext();
 
@@ -35,7 +36,7 @@ const RecipeFinder = () => {
   };
 
   const fetchRecipeDetails = async (recipeId: number) => {
-    const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/informationBulk?ids={recipeId}`;
+    const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/informationBulk?ids=`+recipeId;
 
     try {
       const response = await fetch(url, {
@@ -84,11 +85,12 @@ const RecipeFinder = () => {
       for (let recipe of recipesData) {
           const recipeNutrition = await fetchRecipeNutrition(recipe.id);
           recipe['calories'] = recipeNutrition['calories'];
-          recipe['fats'] = recipeNutrition['fats'];
+          recipe['fats'] = recipeNutrition['fat'];
           recipe['protein'] = recipeNutrition['protein'];
           recipe['carbs'] = recipeNutrition['carbs'];
           const recipeDetails = await fetchRecipeDetails(recipe.id);
-          recipe['instructions'] = recipeDetails['instructions'];
+          console.log(recipeDetails[0]['instructions'])
+          recipe['instructions'] = recipeDetails[0]['instructions'];
       }
 
       for (let i = 0; i < recipesData.length; i++) {
@@ -105,9 +107,6 @@ const RecipeFinder = () => {
           delete recipesData[i];
         }
       }
-
-      console.log(recipesData)
-
       setRecipes(recipesData.map((item: any) => item.title));
       setImages(recipesData.map((item: any) => item.image));
     } catch (error) {
