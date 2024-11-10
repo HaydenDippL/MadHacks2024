@@ -1,62 +1,61 @@
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+import { Button, Card, CardHeader, CardBody, Image } from "@nextui-org/react";
 import { ScrollShadow } from "@nextui-org/react";
 import { useIngredientContext } from "@/context/ingredients-context";
 import { useMacroContext } from "@/context/macro-context";
 
 const RecipeFinder = () => {
-  const [recipes, setRecipes] = useState(["Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!"]);
+  const [recipes, setRecipes] = useState([]);
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
   const [ingredients, setIngredients] = useIngredientContext();
   const [macros, setMacros] = useMacroContext();
 
-  useEffect(() => {
-    const fetchRecipeNutrition = async (recipeId: number) => {
-        const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/${recipeId}/nutritionWidget.json`;
-    
-        try {
-          const response = await fetch(url, {
-            method: "GET",
-            headers: {
-              "x-rapidapi-key": "dc1dbb148emsh667601f198be67bp12c8a8jsnbd71fa52dcdc",
-              "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
-            }
-          });
-    
-          if (!response.ok) {
-            throw new Error(`Error fetching recipe details: ${response.status}`);
-          }
-    
-          const data = await response.json();
-          return data; // Return detailed recipe data
-        } catch (error) {
-            console.log(error);
+  const fetchRecipeNutrition = async (recipeId: number) => {
+    const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/${recipeId}/nutritionWidget.json`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "dc1dbb148emsh667601f198be67bp12c8a8jsnbd71fa52dcdc",
+          "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
         }
-      };
-    
-      const fetchRecipeDetails = async (recipeId: number) => {
-        const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/informationBulk?ids={recipeId}`;
-    
-        try {
-          const response = await fetch(url, {
-            method: "GET",
-            headers: {
-              "x-rapidapi-key": "dc1dbb148emsh667601f198be67bp12c8a8jsnbd71fa52dcdc",
-              "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
-            }
-          });
-    
-          if (!response.ok) {
-            throw new Error(`Error fetching recipe details: ${response.status}`);
-          }
-    
-          const data = await response.json();
-          return data; // Return detailed recipe data
-        } catch (error: unknown) {
-            console.log(error)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error fetching recipe details: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data; // Return detailed recipe data
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
+  const fetchRecipeDetails = async (recipeId: number) => {
+    const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/informationBulk?ids={recipeId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "dc1dbb148emsh667601f198be67bp12c8a8jsnbd71fa52dcdc",
+          "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
         }
-      };
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error fetching recipe details: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data; // Return detailed recipe data
+    } catch (error: unknown) {
+        console.log(error)
+    }
+  };
 
     const fetchRecipes = async () => {
       const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
@@ -71,9 +70,9 @@ const RecipeFinder = () => {
           }
         });
 
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
 
         const data = await response.json();
         const recipesData = data.map((item: any) => ({
@@ -120,11 +119,16 @@ const RecipeFinder = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Recipes</h1>
+    <div className="flex flex-col w-full items-center">
+      <Button
+        className="w-1/2"
+        onClick={fetchRecipes}
+      >
+        Search Recipes
+      </Button>
       <ScrollShadow className="cols" hideScrollBar>
           {recipes.map((recipe, index) => (
-            <Card shadow="sm" key={index} isPressable onPress={() => console.log("item pressed")} disableRipple>
+          <Card shadow="sm" key={index} isPressable onPress={() => console.log("item pressed")} disableRipple>
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
               <h4 className="font-bold text-large">{recipe}</h4>
             </CardHeader>
