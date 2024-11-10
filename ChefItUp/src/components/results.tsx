@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
 import { ScrollShadow } from "@nextui-org/react";
 import { useIngredientContext } from "@/context/ingredients-context";
+import { useMacroContext } from "@/context/macro-context";
 
 const RecipeFinder = () => {
   const [recipes, setRecipes] = useState(["Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!"]);
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
   const [ingredients, setIngredients] = useIngredientContext();
+  const [macros, setMacros] = useMacroContext();
 
   useEffect(() => {
     const fetchRecipeNutrition = async (recipeId: number) => {
@@ -59,7 +61,7 @@ const RecipeFinder = () => {
     const fetchRecipes = async () => {
       const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
       const queryIngredients = ingredients.join(",");
-      const querystring = "?ingredients="+queryIngredients+"&number=5&ignorePantry=false&ranking=1";
+      const querystring = "?ingredients="+queryIngredients+"&number=10&ignorePantry=false&ranking=1";
       try {
         const response = await fetch(url + querystring, {
           method: "GET",
@@ -79,18 +81,33 @@ const RecipeFinder = () => {
             image: item.image,
             id: item.id,
           }));
-          console.log(recipesData)
 
         for (let recipe of recipesData) {
             const recipeNutrition = await fetchRecipeNutrition(recipe.id);
             recipe['calories'] = recipeNutrition['calories'];
-            recipe['fat'] = recipeNutrition['fat'];
+            recipe['fats'] = recipeNutrition['fats'];
             recipe['protein'] = recipeNutrition['protein'];
             recipe['carbs'] = recipeNutrition['carbs'];
             const recipeDetails = await fetchRecipeDetails(recipe.id);
             recipe['instructions'] = recipeDetails['instructions'];
-            console.log(recipesData)
         }
+
+        for (let i = 0; i < recipesData.length; i++) {
+          if (recipesData[i]['calories'] > macros['calories']['amount']) {
+            delete recipesData[i];
+          }
+          if (recipesData[i]['protein'] < macros['protein']['amount']) {
+            delete recipesData[i];
+          }
+          if (recipesData[i]['fats'] > macros['fats']['amount']) {
+            delete recipesData[i];
+          }
+          if (recipesData[i]['carbs'] < macros['carbs']['amount']) {
+            delete recipesData[i];
+          }
+        }
+
+        console.log(recipesData)
 
         setRecipes(recipesData.map((item: any) => item.title));
         setImages(recipesData.map((item: any) => item.image));
@@ -99,7 +116,7 @@ const RecipeFinder = () => {
       }
     };
 
-    // fetchRecipes();
+    fetchRecipes();
   }, []);
 
   return (
