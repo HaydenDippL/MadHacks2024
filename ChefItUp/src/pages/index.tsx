@@ -11,7 +11,7 @@ export default function IndexPage() {
         <h1 className={title()}>Welcome to ChefItUp</h1>
         <p className={subtitle()}>All we you need to do is let us know what ingredients you have, and we'll let tou know the best recipes you can make based on your macro perferences.</p>
       </div>
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row w-4/5 gap-4">
         <Ingredients />
         <Macros />
         <RecipeFinder />
