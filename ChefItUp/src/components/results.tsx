@@ -113,10 +113,8 @@ const RecipeFinder = () => {
       } catch (error) {
         console.log(error)
       }
+      fetchRecipes();
     };
-
-    fetchRecipes();
-  }, []);
 
   return (
     <div className="flex flex-col w-full items-center">
