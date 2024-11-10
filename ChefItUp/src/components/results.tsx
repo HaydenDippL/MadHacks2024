@@ -101,28 +101,33 @@ const RecipeFinder = () => {
   return (
     <div className="flex flex-col w-full items-center">
       <Button
-        className="w-1/2"
+        className="w-1/2 mb-4"
         onClick={fetchRecipes}
       >
         Search Recipes
       </Button>
-      <ScrollShadow className="cols" hideScrollBar>
-          {recipes.map((recipe, index) => (
-          <Card shadow="sm" key={index} isPressable onPress={() => console.log("item pressed")} disableRipple>
-            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-              <h4 className="font-bold text-large">{recipe}</h4>
-            </CardHeader>
-            <CardBody className="overflow-visible py-2">
+      <div className="flex flex-col gap-2">
+        {recipes.map((recipe, index) => (
+          <Card
+            className="h-44 g-4 p-6"
+            shadow="sm"
+            key={index}
+            isPressable
+            onPress={() => console.log("item pressed")}
+            disableRipple
+          >
+            <div className="flex flex-row items-center">
+              <h4 className="flex-1 font-bold text-large mr-4">{recipe}</h4>
               <Image
-                alt="Card background"
-                className="object-cover rounded-xl"
-                src={images[index]}
-                width={100}
-              />
-            </CardBody>
+                  alt="Card background"
+                  className="flex-1 object-cover rounded-xl"
+                  src={images[index]}
+                  width={175}
+                />
+            </div>
           </Card>
-          ))}
-        </ScrollShadow>
+        ))}
+      </div>
     </div>
   );
 };
