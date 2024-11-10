@@ -3,6 +3,7 @@ import { Button, Card, CardHeader, CardBody, Image } from "@nextui-org/react";
 import { ScrollShadow } from "@nextui-org/react";
 import { useIngredientContext } from "@/context/ingredients-context";
 import { useMacroContext } from "@/context/macro-context";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 
 const RecipeFinder = () => {
   const [recipes, setRecipes] = useState([]);
@@ -11,6 +12,12 @@ const RecipeFinder = () => {
   const [instructions, setInstructions] = useState([]);
   const [ingredients, setIngredients] = useIngredientContext();
   const [macros, setMacros] = useMacroContext();
+  const [protein, setProtein] = useState("");
+  const [carbs, setCarbs] = useState("");
+  const [fats, setFats] = useState("");
+  const [calories, setCalories] = useState("");
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [currentRecipe, setCurrentRecipe] = useState({});
 
   const fetchRecipeNutrition = async (recipeId: number) => {
     const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/${recipeId}/nutritionWidget.json`;
@@ -58,6 +65,20 @@ const RecipeFinder = () => {
     }
   };
 
+  function openModal(index: number) {
+    onOpen();
+    const newRecipe = {
+      name: recipes[index],
+      image: images[index],
+      instructions: instructions[index],
+      calories: calories[index],
+      fats: fats[index],
+      protein: protein[index],
+      carbs: carbs[index],
+    };
+    setCurrentRecipe(newRecipe);
+  }
+
   const fetchRecipes = async () => {
     const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
     const queryIngredients = ingredients.join(",");
@@ -89,7 +110,6 @@ const RecipeFinder = () => {
           recipe['protein'] = recipeNutrition['protein'];
           recipe['carbs'] = recipeNutrition['carbs'];
           const recipeDetails = await fetchRecipeDetails(recipe.id);
-          console.log(recipeDetails[0]['instructions'])
           recipe['instructions'] = recipeDetails[0]['instructions'];
       }
 
@@ -107,6 +127,12 @@ const RecipeFinder = () => {
           delete recipesData[i];
         }
       }
+
+      setProtein(recipesData.map((item:any) => item.protein))
+      setFats(recipesData.map((item:any) => item.fats))
+      setCarbs(recipesData.map((item:any) => item.carbs))
+      setCalories(recipesData.map((item:any) => item.calories))
+      setInstructions(recipesData.map((item: any) => item.instructions));
       setRecipes(recipesData.map((item: any) => item.title));
       setImages(recipesData.map((item: any) => item.image));
     } catch (error) {
@@ -114,7 +140,7 @@ const RecipeFinder = () => {
     }
   };
 
-  return (
+  return <>
     <div className="flex flex-col w-full items-center">
       <Button
         className="w-1/2 mb-4"
@@ -129,7 +155,7 @@ const RecipeFinder = () => {
             shadow="sm"
             key={index}
             isPressable
-            onPress={() => console.log("item pressed")}
+            onPress={() => openModal(index)}
             disableRipple
           >
             <div className="flex flex-row items-center">
@@ -145,7 +171,32 @@ const RecipeFinder = () => {
         ))}
       </div>
     </div>
-  );
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <ModalContent>
+      {(onClose) => (
+        <>
+          <ModalHeader className="flex flex-col gap-1">{currentRecipe['name']}</ModalHeader>
+          <ModalBody>
+            <Image 
+              src = {currentRecipe['image']}
+              width={170}
+            />
+            <p>{currentRecipe['instructions']}</p>
+            <p>Carbs: {currentRecipe['carbs']}</p>
+            <p>Fats: {currentRecipe['fats']}</p>
+            <p>Calories: {currentRecipe['calories']}</p>
+            <p>Protein: {currentRecipe['protein']}</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" variant="light" onPress={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </>
+      )}
+    </ModalContent>
+  </Modal>
+  </>
 };
 
 export default RecipeFinder;
