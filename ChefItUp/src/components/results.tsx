@@ -57,90 +57,94 @@ const RecipeFinder = () => {
     }
   };
 
-    const fetchRecipes = async () => {
-      const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
-      const queryIngredients = ingredients.join(",");
-      const querystring = "?ingredients="+queryIngredients+"&number=10&ignorePantry=false&ranking=1";
-      try {
-        const response = await fetch(url + querystring, {
-          method: "GET",
-          headers: {
-            "x-rapidapi-key": "dc1dbb148emsh667601f198be67bp12c8a8jsnbd71fa52dcdc",
-            "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
-          }
-        });
+  const fetchRecipes = async () => {
+    const url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
+    const queryIngredients = ingredients.join(",");
+    const querystring = "?ingredients="+queryIngredients+"&number=10&ignorePantry=false&ranking=1";
+    try {
+      const response = await fetch(url + querystring, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": "dc1dbb148emsh667601f198be67bp12c8a8jsnbd71fa52dcdc",
+          "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
+        }
+      });
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+      const data = await response.json();
+      const recipesData = data.map((item: any) => ({
+          title: item.title,
+          image: item.image,
+          id: item.id,
+        }));
+
+      for (let recipe of recipesData) {
+          const recipeNutrition = await fetchRecipeNutrition(recipe.id);
+          recipe['calories'] = recipeNutrition['calories'];
+          recipe['fats'] = recipeNutrition['fats'];
+          recipe['protein'] = recipeNutrition['protein'];
+          recipe['carbs'] = recipeNutrition['carbs'];
+          const recipeDetails = await fetchRecipeDetails(recipe.id);
+          recipe['instructions'] = recipeDetails['instructions'];
       }
 
-        const data = await response.json();
-        const recipesData = data.map((item: any) => ({
-            title: item.title,
-            image: item.image,
-            id: item.id,
-          }));
-
-        for (let recipe of recipesData) {
-            const recipeNutrition = await fetchRecipeNutrition(recipe.id);
-            recipe['calories'] = recipeNutrition['calories'];
-            recipe['fats'] = recipeNutrition['fats'];
-            recipe['protein'] = recipeNutrition['protein'];
-            recipe['carbs'] = recipeNutrition['carbs'];
-            const recipeDetails = await fetchRecipeDetails(recipe.id);
-            recipe['instructions'] = recipeDetails['instructions'];
+      for (let i = 0; i < recipesData.length; i++) {
+        if (recipesData[i]['calories'] > macros['calories']['amount']) {
+          delete recipesData[i];
         }
-
-        for (let i = 0; i < recipesData.length; i++) {
-          if (recipesData[i]['calories'] > macros['calories']['amount']) {
-            delete recipesData[i];
-          }
-          if (recipesData[i]['protein'] < macros['protein']['amount']) {
-            delete recipesData[i];
-          }
-          if (recipesData[i]['fats'] > macros['fats']['amount']) {
-            delete recipesData[i];
-          }
-          if (recipesData[i]['carbs'] < macros['carbs']['amount']) {
-            delete recipesData[i];
-          }
+        if (recipesData[i]['protein'] < macros['protein']['amount']) {
+          delete recipesData[i];
         }
-
-        console.log(recipesData)
-
-        setRecipes(recipesData.map((item: any) => item.title));
-        setImages(recipesData.map((item: any) => item.image));
-      } catch (error) {
-        console.log(error)
+        if (recipesData[i]['fats'] > macros['fats']['amount']) {
+          delete recipesData[i];
+        }
+        if (recipesData[i]['carbs'] < macros['carbs']['amount']) {
+          delete recipesData[i];
+        }
       }
-      fetchRecipes();
-    };
+
+      console.log(recipesData)
+
+      setRecipes(recipesData.map((item: any) => item.title));
+      setImages(recipesData.map((item: any) => item.image));
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
   return (
     <div className="flex flex-col w-full items-center">
       <Button
-        className="w-1/2"
+        className="w-1/2 mb-4"
         onClick={fetchRecipes}
       >
         Search Recipes
       </Button>
-      <ScrollShadow className="cols" hideScrollBar>
-          {recipes.map((recipe, index) => (
-          <Card shadow="sm" key={index} isPressable onPress={() => console.log("item pressed")} disableRipple>
-            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-              <h4 className="font-bold text-large">{recipe}</h4>
-            </CardHeader>
-            <CardBody className="overflow-visible py-2">
+      <div className="flex flex-col gap-2">
+        {recipes.map((recipe, index) => (
+          <Card
+            className="h-44 g-4 p-6"
+            shadow="sm"
+            key={index}
+            isPressable
+            onPress={() => console.log("item pressed")}
+            disableRipple
+          >
+            <div className="flex flex-row items-center">
+              <h4 className="flex-1 font-bold text-large mr-4">{recipe}</h4>
               <Image
-                alt="Card background"
-                className="object-cover rounded-xl"
-                src={images[index]}
-                width={100}
-              />
-            </CardBody>
+                  alt="Card background"
+                  className="flex-1 object-cover rounded-xl"
+                  src={images[index]}
+                  width={175}
+                />
+            </div>
           </Card>
-          ))}
-        </ScrollShadow>
+        ))}
+      </div>
     </div>
   );
 };
