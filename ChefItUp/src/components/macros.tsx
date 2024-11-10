@@ -1,7 +1,6 @@
-import { useState } from "react";
-
 import { Select, SelectItem } from "@nextui-org/select";
 import { Input } from "@nextui-org/input";
+import { useMacroContext } from "@/context/macro-context";
 
 const levels = ["Low", "Med", "High"] as const;
 
@@ -14,12 +13,7 @@ export const macroPresets = {
 } as const;
 
 export default function Macros() {
-    const [macros, setMacros] = useState({
-        protein: { level: "Med", amount: macroPresets.protein.Med },
-        carbs: { level: "Med", amount: macroPresets.carbs.Med },
-        fats: { level: "Med", amount: macroPresets.fats.Med },
-        calories: { level: "Med", amount: macroPresets.calories.Med }
-    });
+    const [macros, setMacros] = useMacroContext();
 
     // Function to handle selection change for macros
     function setMacroSelectChange(

@@ -2,8 +2,11 @@ import { useState } from "react";
 
 import { Input } from "@nextui-org/input";
 
+import { useIngredientContext } from "@/context/ingredients-context";
+
 export default function Ingredients() {
-    const [ingredients, setIngredients] = useState(["Apple", "Banana", "Pear"]);
+
+    const [ingredients, setIngredients] = useIngredientContext();
     const [newIngredient, setNewIngredient] = useState("");
 
     function handleInputchange(event: React.ChangeEvent<HTMLInputElement>) {
