@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+import { ScrollShadow } from "@nextui-org/react";
 
 const RecipeFinder = () => {
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState(["Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!","Apple Slices", "Bananas", "Oranges!"]);
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
   const [ingredients, setIngredients] = useState("");
 
   useEffect(() => {
-    const fetchRecipeNutrition = async (recipeId) => {
+    const fetchRecipeNutrition = async (recipeId: number) => {
         const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/${recipeId}/nutritionWidget.json`;
     
         try {
@@ -26,11 +28,11 @@ const RecipeFinder = () => {
           const data = await response.json();
           return data; // Return detailed recipe data
         } catch (error) {
-          setError(error.message);
+            console.log(error);
         }
       };
     
-      const fetchRecipeDetails = async (recipeId) => {
+      const fetchRecipeDetails = async (recipeId: number) => {
         const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/informationBulk?ids={recipeId}`;
     
         try {
@@ -48,8 +50,8 @@ const RecipeFinder = () => {
     
           const data = await response.json();
           return data; // Return detailed recipe data
-        } catch (error) {
-          setError(error.message);
+        } catch (error: unknown) {
+            console.log(error)
         }
       };
 
@@ -70,7 +72,7 @@ const RecipeFinder = () => {
         }
 
         const data = await response.json();
-        const recipesData = data.map(item => ({
+        const recipesData = data.map((item: any) => ({
             title: item.title,
             image: item.image,
             id: item.id,
@@ -87,10 +89,10 @@ const RecipeFinder = () => {
             console.log(recipesData)
         }
 
-        setRecipes(recipesData.map(item => item.title));
-        setImages(recipesData.map(item => item.image));
+        setRecipes(recipesData.map((item: any) => item.title));
+        setImages(recipesData.map((item: any) => item.image));
       } catch (error) {
-        setError(error.message);
+        console.log(error)
       }
     };
 
@@ -100,18 +102,23 @@ const RecipeFinder = () => {
   return (
     <div>
       <h1>Recipes</h1>
-      {error ? (
-        <p>{error}</p>
-      ) : (
-        <ul>
+      <ScrollShadow className="cols" hideScrollBar>
           {recipes.map((recipe, index) => (
-            <li key={index}>
-              <h3>{recipe}</h3>
-              <img src={images[index]} alt={recipe} style={{ width: "100px" }} />
-            </li>
+            <Card shadow="sm" key={index} isPressable onPress={() => console.log("item pressed")} disableRipple>
+            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+              <h4 className="font-bold text-large">{recipe}</h4>
+            </CardHeader>
+            <CardBody className="overflow-visible py-2">
+              <Image
+                alt="Card background"
+                className="object-cover rounded-xl"
+                src="https://nextui.org/images/fruit-2.jpeg"
+                width={100}
+              />
+            </CardBody>
+          </Card>
           ))}
-        </ul>
-      )}
+        </ScrollShadow>
     </div>
   );
 };
